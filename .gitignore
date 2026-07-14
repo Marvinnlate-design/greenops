@@ -1,0 +1,15 @@
+/vendor/
+/node_modules/
+.env
+.env.*
+!.env.example
+/storage/
+/public/hot
+/public/storage
+.DS_Store
+.phpunit.cache
+composer.lock
+package-lock.json
+yarn.lock
+.idea/
+.vscode/
