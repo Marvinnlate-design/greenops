@@ -25,8 +25,8 @@ WORKDIR /var/www/html
 COPY . .
 
 # Installer les dépendances Laravel
-RUN composer install --no-dev --optimize-autoloader
-
+RUN composer config --global audit.block-insecure false \
+    && composer install --no-dev --optimize-autoloader
 # Installer et compiler Vite
 RUN npm install && npm run build
 
