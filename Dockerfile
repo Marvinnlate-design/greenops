@@ -26,9 +26,11 @@ RUN composer config --global audit.block-insecure false \
 # Installer et compiler Vite
 RUN npm install && npm run build
 
-# Créer les dossiers et définir les permissions
-RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Créer tous les dossiers nécessaires pour Laravel
+RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
+    && mkdir -p /var/www/html/storage/logs \
+    && mkdir -p /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap
 
 EXPOSE 8000
 
