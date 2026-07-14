@@ -60,6 +60,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/alerts', [AlertController::class, 'index'])
     ->name('alerts.index');
 
+Route::patch('/alerts/{alert}/read', [AlertController::class, 'markAsRead'])
+    ->name('alerts.read');    
+
 Route::post('/alerts/read-all', [AlertController::class, 'readAll'])
     ->name('alerts.readAll');
 

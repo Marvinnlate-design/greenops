@@ -19,24 +19,41 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
             <!-- Stats rapides -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Capteurs actifs</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ $stats['total_sensors'] }}</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Actionneurs allumés</p>
-                    <p class="text-2xl font-bold text-emerald-600">{{ $stats['active_actuators'] }}</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Total lectures</p>
-                    <p class="text-2xl font-bold text-gray-900">{{ number_format($stats['total_readings']) }}</p>
-                </div>
-                <div class="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Alertes actives</p>
-                    <p class="text-2xl font-bold text-red-600">{{ $stats['alerts'] }}</p>
-                </div>
-            </div>
+            <div class="grid grid-cols-3 gap-4 mb-8">
+
+    <div class="bg-white p-5 rounded-2xl shadow border">
+        <p class="text-xs text-gray-500 uppercase">Capteurs actifs</p>
+        <p class="text-3xl font-bold text-gray-900">
+            {{ $stats['total_sensors'] }}
+        </p>
+    </div>
+
+    <div class="bg-white p-5 rounded-2xl shadow border">
+        <p class="text-xs text-gray-500 uppercase">Actionneurs actifs</p>
+        <p class="text-3xl font-bold text-emerald-600">
+            {{ $stats['active_actuators'] }}
+        </p>
+    </div>
+
+    <button
+        onclick="openAlerts()"
+        class="bg-red-600 hover:bg-red-700 text-white rounded-2xl shadow p-5 text-left transition">
+
+        <p class="text-xs uppercase opacity-80">
+            Alertes actives
+        </p>
+
+        <p class="text-4xl font-black mt-2">
+            {{ $stats['alerts'] }}
+        </p>
+
+        <p class="text-sm mt-2">
+            Cliquer pour afficher
+        </p>
+
+    </button>
+
+</div>
 
             <!-- Cartes des capteurs -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
@@ -84,6 +101,116 @@
                 @endforeach
             </div>
 
+            <!-- Fenêtre Alertes -->
+
+<div
+    id="alertsModal"
+    class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+
+    <div class="bg-white rounded-2xl shadow-xl w-11/12 max-w-3xl max-h-[80vh] overflow-y-auto">
+
+        <div class="flex justify-between items-center border-b px-6 py-4">
+
+            <h2 class="text-xl font-bold">
+                🚨 Alertes actives
+            </h2>
+
+            <button
+                onclick="closeAlerts()"
+                class="text-gray-500 hover:text-black text-2xl">
+
+                ✕
+
+            </button>
+
+        </div>
+
+        <div class="p-6">
+
+            @if($alerts->count())
+
+                @foreach($alerts as $alert)
+
+                    <div class="border rounded-xl p-4 mb-3">
+
+                        <div class="flex justify-between">
+
+                            <div>
+
+                                <h3 class="font-bold">
+                                    {{ $alert->sensor->name }}
+                                </h3>
+
+                                <p class="text-gray-600 mt-1">
+
+                                    Valeur :
+
+                                    <strong>
+
+                                        {{ $alert->value }}
+
+                                        {{ $alert->sensor->unit }}
+
+                                    </strong>
+
+                                </p>
+
+                                <p class="text-sm text-red-600">
+
+                                    {{ $alert->message }}
+
+                                </p>
+
+                            </div>
+
+                            <div class="text-right">
+
+                                <p class="text-xs text-gray-500">
+
+                                    {{ $alert->created_at->diffForHumans() }}
+
+                                </p>
+
+                                <form
+                                    action="{{ route('alerts.read',$alert) }}"
+                                    method="POST">
+
+                                    @csrf
+
+                                    @method('PATCH')
+
+                                    <button
+                                        class="mt-3 bg-emerald-600 text-white px-3 py-2 rounded">
+
+                                        Marquer comme lu
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                @endforeach
+
+            @else
+
+                <div class="text-center py-10">
+
+                    ✅ Aucune alerte active.
+
+                </div>
+
+            @endif
+
+        </div>
+
+    </div>
+
+</div>
             
                             
 
@@ -143,6 +270,34 @@
             };
             return colors[name] || '#10b981';
         }
+
+        function openAlerts() {
+
+    document
+        .getElementById('alertsModal')
+        .classList
+        .remove('hidden');
+
+    document
+        .getElementById('alertsModal')
+        .classList
+        .add('flex');
+
+}
+
+function closeAlerts() {
+
+    document
+        .getElementById('alertsModal')
+        .classList
+        .remove('flex');
+
+    document
+        .getElementById('alertsModal')
+        .classList
+        .add('hidden');
+
+}
 
         function refreshData() {
             location.reload();
