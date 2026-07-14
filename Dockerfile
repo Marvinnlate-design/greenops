@@ -26,8 +26,9 @@ RUN composer config --global audit.block-insecure false \
 # Installer et compiler Vite
 RUN npm install && npm run build
 
-# Permissions
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+# Créer les dossiers et définir les permissions
+RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 8000
 
