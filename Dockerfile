@@ -34,4 +34,15 @@ RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
 
 EXPOSE 8000
 
+# Créer les dossiers nécessaires à Laravel
+RUN mkdir -p storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache
+
+# Donner les permissions
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
+
 CMD php artisan serve --host=0.0.0.0 --port=8000
