@@ -16,8 +16,7 @@ Route::get('/', function () {
 
 require __DIR__.'/auth.php';
 
-Route::middleware(['auth', 'verified'])->group(function () {
-
+Route::middleware(['auth'])->group(function () {
     /*
     |--------------------------------------------------------------------------
     | Dashboard
