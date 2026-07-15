@@ -30,6 +30,9 @@ RUN composer config --global audit.block-insecure false \
 # Installer et compiler Vite
 RUN npm install && npm run build
 
+# Vérifier que les assets sont bien présents
+RUN ls -la /var/www/html/public/build/
+
 # Créer les dossiers nécessaires
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && mkdir -p /var/www/html/storage/logs \
