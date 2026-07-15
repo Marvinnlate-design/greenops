@@ -20,10 +20,10 @@ WORKDIR /var/www/html
 
 COPY . .
 
-# Installer les extensions PHP (avec PostgreSQL)
+# Installer les extensions PHP
 RUN docker-php-ext-install pdo pdo_pgsql pdo_mysql gd
 
-# Ignorer les avis de sécurité et installer
+# Ignorer les avis de sécurité et installer les dépendances
 RUN composer config --global audit.block-insecure false \
     && composer install --no-dev --optimize-autoloader
 
@@ -36,6 +36,7 @@ RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && mkdir -p /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap
 
-EXPOSE 8000
+# ⬇️ Script de démarrage ⬇️
+CMD bash start.sh
 
-CMD php artisan serve --host=0.0.0.0 --port=8000
+EXPOSE 8000
