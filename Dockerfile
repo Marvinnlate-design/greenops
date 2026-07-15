@@ -10,15 +10,18 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip \
     nodejs \
-    npm
+    npm \
+    libpq-dev
 
-    RUN docker-php-ext-install pdo pdo_mysql mbstring exif bcmath
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
 COPY . .
+
+# Installer les extensions PHP (avec PostgreSQL)
+RUN docker-php-ext-install pdo pdo_pgsql pdo_mysql gd
 
 # Ignorer les avis de sécurité et installer
 RUN composer config --global audit.block-insecure false \
@@ -27,23 +30,15 @@ RUN composer config --global audit.block-insecure false \
 # Installer et compiler Vite
 RUN npm install && npm run build
 
-# Créer tous les dossiers nécessaires pour Laravel
+# Créer les dossiers nécessaires
 RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && mkdir -p /var/www/html/storage/logs \
     && mkdir -p /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap
 
+# ⬇️ MIGRATION (une seule fois) ⬇️
+RUN php artisan migrate --force
+
 EXPOSE 8000
-
-# Créer les dossiers nécessaires à Laravel
-RUN mkdir -p storage/framework/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    storage/logs \
-    bootstrap/cache
-
-# Donner les permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
 
 CMD php artisan serve --host=0.0.0.0 --port=8000
