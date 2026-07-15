@@ -36,9 +36,6 @@ RUN mkdir -p /var/www/html/storage/framework/{cache,sessions,views} \
     && mkdir -p /var/www/html/bootstrap/cache \
     && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap
 
-# ⬇️ MIGRATION (une seule fois) ⬇️
-RUN php artisan migrate --force
-
 EXPOSE 8000
 
 CMD php artisan serve --host=0.0.0.0 --port=8000
