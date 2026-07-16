@@ -217,6 +217,41 @@
         </div>
     </div>
 
+       <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-8">
+
+    <h2 class="text-xl font-bold mb-5">
+        🚨 Alertes en cours
+    </h2>
+
+    @forelse($alerts as $alert)
+
+        <div class="border-l-4 border-red-500 bg-red-50 p-4 rounded mb-3">
+
+            <div class="font-bold text-red-700">
+                {{ $alert->sensor->name }}
+            </div>
+
+            <div class="text-gray-700">
+                {{ $alert->message }}
+            </div>
+
+            <div class="text-xs text-gray-500 mt-2">
+                {{ $alert->created_at->diffForHumans() }}
+            </div>
+
+        </div>
+
+    @empty
+
+        <div class="text-green-600">
+            ✅ Aucune alerte active
+        </div>
+
+    @endforelse
+
+</div>
+
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -303,40 +338,7 @@ function closeAlerts() {
             location.reload();
         }
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mt-8">
-
-    <h2 class="text-xl font-bold mb-5">
-        🚨 Alertes en cours
-    </h2>
-
-    @forelse($alerts as $alert)
-
-        <div class="border-l-4 border-red-500 bg-red-50 p-4 rounded mb-3">
-
-            <div class="font-bold text-red-700">
-                {{ $alert->sensor->name }}
-            </div>
-
-            <div class="text-gray-700">
-                {{ $alert->message }}
-            </div>
-
-            <div class="text-xs text-gray-500 mt-2">
-                {{ $alert->created_at->diffForHumans() }}
-            </div>
-
-        </div>
-
-    @empty
-
-        <div class="text-green-600">
-            ✅ Aucune alerte active
-        </div>
-
-    @endforelse
-
-</div>
-
+     
         // Auto-refresh toutes les 60 secondes
         setTimeout(() => { location.reload(); }, 60000);
     </script>
