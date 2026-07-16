@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sensor;
 use App\Models\Actuator;
+use App\Models\Alert;
 use App\Models\SensorReading;
 use App\Models\ActuatorLog;
 use Carbon\Carbon;
@@ -62,13 +63,19 @@ class DashboardController extends Controller
     'alerts' => 1,
 ];
 
+$alerts = Alert::with('sensor')
+    ->where('is_read', false)
+    ->latest()
+    ->get();
+
         return view('dashboard', compact(
-            'latestReadings',
-            'chartData',
-            'recentLogs',
-            'actuators',
-            'stats'
-        ));
+    'latestReadings',
+    'chartData',
+    'recentLogs',
+    'actuators',
+    'stats',
+    'alerts'
+));
     }
 
     private function getSensorIcon(string $type): string
