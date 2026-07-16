@@ -43,18 +43,20 @@ class DashboardController extends Controller
         $actuators = Actuator::all();
 
         // 6. Statistiques globales
-        $stats = [
-            'total_sensors' => $sensors->count(),
-            'active_actuators' => Actuator::where('status', true)->count(),
-            'total_readings' => SensorReading::count(),
-            'alerts' => Alert::where('is_read', false)->count(),
-        ];
+    $alertCount = 0;
+foreach ($sensors as $sensor) {
+    $lastReading = $sensor->readings->first();
+    if ($lastReading && !$this->checkThreshold($sensor, $lastReading->value)) {
+        $alertCount++;
+    }
+}
 
-        $alerts = Alert::with('sensor')
-    ->where('is_read', false)
-    ->latest()
-    ->take(10)
-    ->get();
+$stats = [
+    'total_sensors' => $sensors->count(),
+    'active_actuators' => Actuator::where('status', true)->count(),
+    'total_readings' => SensorReading::count(),
+    'alerts' => $alertCount,  // ✅ Nouveau calcul
+];
 
         return view('dashboard', compact(
             'alerts',
