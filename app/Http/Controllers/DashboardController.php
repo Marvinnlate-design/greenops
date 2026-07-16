@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Alert;
 use App\Models\Sensor;
 use App\Models\Actuator;
 use App\Models\SensorReading;
@@ -33,33 +32,37 @@ class DashboardController extends Controller
             ];
         }
 
-        // 3. Données pour les graphiques (dernières 50 lectures pour chaque capteur)
+        // 3. Données pour les graphiques (dernières 50 lectures par capteur)
         $chartData = $this->prepareChartData();
 
         // 4. Derniers logs des actionneurs
         $recentLogs = ActuatorLog::with('actuator')->latest()->take(10)->get();
 
-        // 5. Actionneurs pour le contrôle (on les passe pour les boutons sur le dashboard si besoin)
+        // 5. Actionneurs
         $actuators = Actuator::all();
 
-        // 6. Statistiques globales
-    $alertCount = 0;
-foreach ($sensors as $sensor) {
-    $lastReading = $sensor->readings->first();
-    if ($lastReading && !$this->checkThreshold($sensor, $lastReading->value)) {
-        $alertCount++;
-    }
-}
+        // 6. Statistiques globales (calculées proprement)
+        $totalSensors = $sensors->count();
+        $activeActuators = Actuator::where('status', true)->count();
+        $totalReadings = SensorReading::count();
 
-$stats = [
-    'total_sensors' => $sensors->count(),
-    'active_actuators' => Actuator::where('status', true)->count(),
-    'total_readings' => SensorReading::count(),
-    'alerts' => $alertCount,  // ✅ Nouveau calcul
-];
+        // Compter les alertes : capteurs dont la dernière lecture est hors seuil
+        $alertCount = 0;
+        foreach ($sensors as $sensor) {
+            $lastReading = $sensor->readings->first();
+            if ($lastReading && !$this->checkThreshold($sensor, $lastReading->value)) {
+                $alertCount++;
+            }
+        }
+
+        $stats = [
+            'total_sensors' => $totalSensors,
+            'active_actuators' => $activeActuators,
+            'total_readings' => $totalReadings,
+            'alerts' => $alertCount,
+        ];
 
         return view('dashboard', compact(
-            'alerts',
             'latestReadings',
             'chartData',
             'recentLogs',
