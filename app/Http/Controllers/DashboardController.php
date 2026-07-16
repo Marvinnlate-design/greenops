@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Sensor;
 use App\Models\Actuator;
-use App\Models\Alert;
 use App\Models\SensorReading;
 use App\Models\ActuatorLog;
+use App\Models\Alert;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -68,7 +68,8 @@ $alerts = Alert::with('sensor')
     ->latest()
     ->get();
 
-        return view('dashboard', compact(
+       
+ return view('dashboard', compact(
     'latestReadings',
     'chartData',
     'recentLogs',
